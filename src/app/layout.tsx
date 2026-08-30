@@ -14,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className="bg-dark-900 text-gray-100 min-h-screen flex flex-col antialiased selection:bg-garden-500 selection:text-white">
+      <body className="bg-surface-950 text-warm-100 min-h-screen flex flex-col antialiased selection:bg-amber-500 selection:text-surface-950">
         <GardenProvider>
           {children}
         </GardenProvider>
