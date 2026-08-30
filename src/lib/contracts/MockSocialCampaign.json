@@ -1,0 +1,55 @@
+{
+  "contractName": "MockSocialCampaign",
+  "sourceName": "MockTargetService.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "channel",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "contentHash",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "budgetUsed",
+          "type": "uint256"
+        }
+      ],
+      "name": "CampaignBroadcast",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "channel",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "contentHash",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "budgetUsed",
+          "type": "uint256"
+        }
+      ],
+      "name": "broadcastCampaign",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "608060405234801561000f575f80fd5b506101c68061001d5f395ff3fe60806040526004361061001d575f3560e01c8063937588de14610021575b5f80fd5b61003461002f3660046100c1565b610036565b005b7f60fd6555fa00cef9f8f96ecb3ab773a7ebb276f1832b18b0ff807f2ca05ab8cb858585858560405161006d959493929190610157565b60405180910390a15050505050565b5f8083601f84011261008c575f80fd5b50813567ffffffffffffffff8111156100a3575f80fd5b6020830191508360208285010111156100ba575f80fd5b9250929050565b5f805f805f606086880312156100d5575f80fd5b853567ffffffffffffffff808211156100ec575f80fd5b6100f889838a0161007c565b90975095506020880135915080821115610110575f80fd5b5061011d8882890161007c565b96999598509660400135949350505050565b81835281816020850137505f828201602090810191909152601f909101601f19169091010190565b606081525f61016a60608301878961012f565b828103602084015261017d81868861012f565b915050826040830152969550505050505056fea2646970667358221220a703bd08bef259073f6ed02d0b5c631cc28dd1329021522aeca52b8153d2627f64736f6c63430008180033"
+}

@@ -1,0 +1,106 @@
+{
+  "contractName": "MockTreasuryVault",
+  "sourceName": "MockTargetService.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "memo",
+          "type": "string"
+        }
+      ],
+      "name": "GrantDisbursed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Staked",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "balances",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "memo",
+          "type": "string"
+        }
+      ],
+      "name": "disburseGrant",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "stakeTokens",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "608060405234801561000f575f80fd5b506102a48061001d5f395ff3fe608060405260043610610033575f3560e01c806327e235e3146100375780637547c7a314610074578063c85d9af514610089575b5f80fd5b348015610042575f80fd5b5061006261005136600461015d565b5f6020819052908152604090205481565b60405190815260200160405180910390f35b61008761008236600461017d565b61009c565b005b610087610097366004610194565b6100f7565b335f90815260208190526040812080548392906100ba908490610214565b909155505060405181815233907f9e71bc8eea02a63969f509818f2dafb9254532904319f9dbda79b67bd34a5f3d9060200160405180910390a250565b836001600160a01b03167f5fbfbf40b543a4236c762ace382c1fd4a878223d5e9ca2335ae0168def44959f84848460405161013493929190610239565b60405180910390a250505050565b80356001600160a01b0381168114610158575f80fd5b919050565b5f6020828403121561016d575f80fd5b61017682610142565b9392505050565b5f6020828403121561018d575f80fd5b5035919050565b5f805f80606085870312156101a7575f80fd5b6101b085610142565b935060208501359250604085013567ffffffffffffffff808211156101d3575f80fd5b818701915087601f8301126101e6575f80fd5b8135818111156101f4575f80fd5b886020828501011115610205575f80fd5b95989497505060200194505050565b8082018082111561023357634e487b7160e01b5f52601160045260245ffd5b92915050565b83815260406020820152816040820152818360608301375f818301606090810191909152601f909201601f191601019291505056fea264697066735822122061f8d8c860eb73e9bcd2a2ae058d0136d2e18a3f97ffe6188e63b6dd719aa6a164736f6c63430008180033"
+}

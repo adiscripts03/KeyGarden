@@ -1,0 +1,61 @@
+{
+  "contractName": "MockVendorContract",
+  "sourceName": "MockTargetService.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "invoiceId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "payer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "vendorName",
+          "type": "string"
+        }
+      ],
+      "name": "InvoicePaid",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "invoiceId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "vendorName",
+          "type": "string"
+        }
+      ],
+      "name": "payInvoice",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "608060405234801561000f575f80fd5b506101668061001d5f395ff3fe60806040526004361061001d575f3560e01c8063c917e72014610021575b5f80fd5b61003461002f366004610082565b610036565b005b336001600160a01b0316847f617e861a4becd5fae47ea069d61d68a67e1bd3608697b3e9ccd5e90f8ec22fe9858585604051610074939291906100fb565b60405180910390a350505050565b5f805f8060608587031215610095575f80fd5b8435935060208501359250604085013567ffffffffffffffff808211156100ba575f80fd5b818701915087601f8301126100cd575f80fd5b8135818111156100db575f80fd5b8860208285010111156100ec575f80fd5b95989497505060200194505050565b83815260406020820152816040820152818360608301375f818301606090810191909152601f909201601f191601019291505056fea26469706673582212203e9b6331340bae07e237612658d2909030c3d548dbd058d88660a0ea5a7d111764736f6c63430008180033"
+}

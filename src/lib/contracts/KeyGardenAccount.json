@@ -1,0 +1,299 @@
+{
+  "contractName": "KeyGardenAccount",
+  "sourceName": "KeyGardenAccount.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_registry",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "ExecutionFailed",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidSignature",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "Unauthorized",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "target",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "Executed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "nodeId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "target",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "ExecutedBySubAccount",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Received",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "target",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "execute",
+      "outputs": [
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "nodeId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "target",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "executeFromSubAccount",
+      "outputs": [
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "nonce",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "registry",
+      "outputs": [
+        {
+          "internalType": "contract HierarchicalPolicyRegistry",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "nonce",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "initCode",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "callData",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256",
+              "name": "callGasLimit",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "verificationGasLimit",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "preVerificationGas",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxFeePerGas",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxPriorityFeePerGas",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "paymasterAndData",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signature",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct KeyGardenAccount.UserOperation",
+          "name": "userOp",
+          "type": "tuple"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "userOpHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "missingAccountFunds",
+          "type": "uint256"
+        }
+      ],
+      "name": "validateUserOp",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "validationData",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ],
+  "bytecode": "60a06040526040516107ff3803806107ff83398101604081905261002291610061565b5f80546001600160a01b0319166001600160a01b0393841617905516608052610092565b80516001600160a01b038116811461005c575f80fd5b919050565b5f8060408385031215610072575f80fd5b61007b83610046565b915061008960208401610046565b90509250929050565b60805161074f6100b05f395f818160da015261034b015261074f5ff3fe608060405260043610610057575f3560e01c80633a871cdd146100975780637b103999146100c95780638da5cb5b14610114578063affed0e014610132578063b61d27f614610147578063bcb0846614610167575f80fd5b366100935760405134815233907f88a5966d370b9919b20f3e2c13ff65706f196a4e32cc2c12bf57088f885258749060200160405180910390a2005b5f80fd5b3480156100a2575f80fd5b506100b66100b13660046104a4565b61017a565b6040519081526020015b60405180910390f35b3480156100d4575f80fd5b506100fc7f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b0390911681526020016100c0565b34801561011f575f80fd5b505f546100fc906001600160a01b031681565b34801561013d575f80fd5b506100b660015481565b61015a610155366004610553565b6101d3565b6040516100c091906105a9565b61015a6101753660046105f5565b6102db565b5f81156101ca576040515f90339084908381818185875af1925050503d805f81146101c0576040519150601f19603f3d011682016040523d82523d5f602084013e6101c5565b606091505b505050505b505f9392505050565b5f546060906001600160a01b031633148015906101f05750333014155b1561020d576040516282b42960e81b815260040160405180910390fd5b5f80866001600160a01b031686868660405161022a929190610658565b5f6040518083038185875af1925050503d805f8114610264576040519150601f19603f3d011682016040523d82523d5f602084013e610269565b606091505b50915091508161028c57604051632b3f6d1160e21b815260040160405180910390fd5b866001600160a01b03167fcaf938de11c367272220bfd1d2baa99ca46665e7bc4d85f00adb51b90fe1fa9f8787876040516102c993929190610667565b60405180910390a29695505050505050565b60605f60048310156102ed575f610303565b6102fa60045f858761069c565b610303916106c3565b60405163cfa7efdb60e01b8152600481018990523360248201526001600160a01b038881166044830152606482018890526001600160e01b0319831660848301529192505f917f0000000000000000000000000000000000000000000000000000000000000000169063cfa7efdb9060a4016020604051808303815f875af1158015610391573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906103b591906106f3565b9050806103d4576040516282b42960e81b815260040160405180910390fd5b5f80886001600160a01b03168888886040516103f1929190610658565b5f6040518083038185875af1925050503d805f811461042b576040519150601f19603f3d011682016040523d82523d5f602084013e610430565b606091505b50915091508161045357604051632b3f6d1160e21b815260040160405180910390fd5b886001600160a01b03168a7f16d344a02833a73e58f1d20a59501b1b405771e721da4bf3d7c17498960a79598a60405161048f91815260200190565b60405180910390a39998505050505050505050565b5f805f606084860312156104b6575f80fd5b833567ffffffffffffffff8111156104cc575f80fd5b840161016081870312156104de575f80fd5b95602085013595506040909401359392505050565b80356001600160a01b0381168114610509575f80fd5b919050565b5f8083601f84011261051e575f80fd5b50813567ffffffffffffffff811115610535575f80fd5b60208301915083602082850101111561054c575f80fd5b9250929050565b5f805f8060608587031215610566575f80fd5b61056f856104f3565b935060208501359250604085013567ffffffffffffffff811115610591575f80fd5b61059d8782880161050e565b95989497509550505050565b5f602080835283518060208501525f5b818110156105d5578581018301518582016040015282016105b9565b505f604082860101526040601f19601f8301168501019250505092915050565b5f805f805f60808688031215610609575f80fd5b85359450610619602087016104f3565b935060408601359250606086013567ffffffffffffffff81111561063b575f80fd5b6106478882890161050e565b969995985093965092949392505050565b818382375f9101908152919050565b83815260406020820152816040820152818360608301375f818301606090810191909152601f909201601f1916010192915050565b5f80858511156106aa575f80fd5b838611156106b6575f80fd5b5050820193919092039150565b6001600160e01b031981358181169160048510156106eb5780818660040360031b1b83161692505b505092915050565b5f60208284031215610703575f80fd5b81518015158114610712575f80fd5b939250505056fea26469706673582212207df32ff22797da69e7369766d70f1a379111482ee077d6c1162ab39aa0b2a78d64736f6c63430008180033"
+}
