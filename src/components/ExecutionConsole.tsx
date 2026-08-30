@@ -3,21 +3,19 @@
 import React, { useState } from 'react';
 import { useGarden } from '../context/GardenContext';
 import { MOCK_TARGETS, PAYMASTER_CONTRACT_ADDRESS } from '../lib/constants';
-import { isNodeAndAncestorsActive } from '../lib/garden-engine';
+import { isNodeAndAncestorsActive, getAllNodes } from '../lib/garden-engine';
 import {
   Zap,
   Send,
-  Fuel,
   CheckCircle2,
   AlertTriangle,
   FileCode,
   ShieldAlert,
   Loader2,
-  Sparkles,
-  ArrowRight,
-  Code2,
   ChevronRight,
-  RefreshCw
+  Code2,
+  Layers,
+  Fuel
 } from 'lucide-react';
 
 export const ExecutionConsole: React.FC = () => {
@@ -25,20 +23,23 @@ export const ExecutionConsole: React.FC = () => {
     tree,
     activePersonaId,
     activePersonaNode,
+    setActivePersona,
     executeAction,
     isExecuting
   } = useGarden();
 
-  const [selectedTargetIndex, setSelectedTargetIndex] = useState<number>(2); // Default to Social & Ads
+  const [selectedTargetIndex, setSelectedTargetIndex] = useState<number>(2); // Default to Social Campaign
   const [selectedFuncIndex, setSelectedFuncIndex] = useState<number>(0);
   const [amountEth, setAmountEth] = useState<string>('0.05');
-  const [customArgs, setCustomArgs] = useState<string>('Campaign: Devcon Nagpur Awareness');
+  const [customArgs, setCustomArgs] = useState<string>('Campaign: Devcon IIITN Community Grant');
   const [lastExecutedLog, setLastExecutedLog] = useState<any | null>(null);
   const [showRawUserOp, setShowRawUserOp] = useState<boolean>(false);
 
+  const allAvailableNodes = getAllNodes(tree);
+
   if (!activePersonaNode) {
     return (
-      <div className="bg-dark-850 rounded-2xl border border-dark-750 p-6 text-center text-gray-400">
+      <div className="bg-surface-900 rounded-2xl border border-surface-750 p-6 text-center text-warm-400">
         Please select an active persona to test execution.
       </div>
     );
@@ -61,237 +62,228 @@ export const ExecutionConsole: React.FC = () => {
   };
 
   return (
-    <div className="bg-dark-850 rounded-2xl border border-dark-750 p-5 shadow-xl space-y-5">
+    <div className="bg-surface-900 rounded-2xl border border-surface-750 p-5 shadow-sm space-y-5">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
-            <Zap className="w-5 h-5 fill-current" />
+          <div className="p-2 rounded-xl bg-surface-800 border border-surface-700 text-amber-400">
+            <Zap className="w-4 h-4 fill-current" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
-              ERC-4337 Execution Arena
-              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-garden-500/10 text-garden-400 border border-garden-500/20">
-                Gas Sponsored
+            <h3 className="text-base font-bold text-warm-50 tracking-tight flex items-center gap-2">
+              Transaction Dispatcher
+              <span className="text-[10px] font-medium tracking-wide uppercase px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                Paymaster Sponsored
               </span>
             </h3>
-            <p className="text-xs text-gray-400">
-              Dispatch UserOperations governed by inherited tree policies & paymasters.
+            <p className="text-xs text-warm-400">
+              Dispatch ERC-4337 UserOperations validated against the hierarchical policy tree.
             </p>
           </div>
         </div>
+      </div>
 
-        <div className="text-right">
-          <span className="text-[10px] text-gray-400 block">Acting as Signer</span>
-          <span className="text-xs font-bold text-amber-400 flex items-center gap-1 justify-end">
-            {activePersonaNode.label}
-          </span>
+      {/* Quick Signer Persona Selector Bar */}
+      <div className="space-y-1.5 bg-surface-950/60 p-3 rounded-xl border border-surface-800">
+        <span className="text-[10px] uppercase font-semibold text-warm-400 tracking-wider block">
+          Switch Acting Signer Persona
+        </span>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {allAvailableNodes.slice(0, 4).map((node) => {
+            const isCurrent = activePersonaId === node.nodeId;
+            const nodeStatus = isNodeAndAncestorsActive(tree, node.nodeId);
+            return (
+              <button
+                key={node.nodeId}
+                onClick={() => setActivePersona(node.nodeId)}
+                className={`p-2 rounded-lg text-left transition-all border text-xs flex flex-col justify-between ${
+                  isCurrent
+                    ? 'bg-amber-500/10 border-amber-400/40 text-warm-50 shadow-sm'
+                    : 'bg-surface-900 border-surface-800 text-warm-400 hover:text-warm-200 hover:border-surface-700'
+                }`}
+              >
+                <div className="flex items-center justify-between w-full mb-1">
+                  <span className="text-[9px] font-mono text-warm-500">L{node.depth}</span>
+                  {!nodeStatus.active && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                  )}
+                  {isCurrent && nodeStatus.active && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  )}
+                </div>
+                <span className="font-semibold truncate text-[11px] block">{node.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Revocation Warning if active persona branch is pruned */}
+      {/* Revocation Warning Alert */}
       {isRevoked && (
-        <div className="bg-red-950/40 border border-red-500/40 rounded-xl p-3 text-xs text-red-200 flex items-start gap-2.5">
-          <ShieldAlert className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+        <div className="bg-rose-950/40 border border-rose-800/60 rounded-xl p-3 text-xs text-rose-200 flex items-start gap-2.5">
+          <ShieldAlert className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
           <div>
-            <span className="font-bold block">Cascading Revocation Detected:</span>
-            <span className="text-red-300/80">{status.reason}</span>
+            <span className="font-bold block">Cascading Revocation In Effect</span>
+            <span className="text-rose-300/80 leading-relaxed text-[11px]">{status.reason}</span>
           </div>
         </div>
       )}
 
-      {/* Quick Action Presets */}
-      <div>
-        <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-2">
-          1. Choose Action / Target Contract
-        </span>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {MOCK_TARGETS.map((t, idx) => (
-            <button
-              key={t.address}
-              onClick={() => {
-                setSelectedTargetIndex(idx);
+      {/* Target & Function Configuration Form */}
+      <div className="space-y-3 bg-surface-950/40 p-4 rounded-xl border border-surface-800">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          {/* Target Contract Selector */}
+          <div>
+            <label className="text-[10px] uppercase font-semibold text-warm-400 block mb-1">
+              Target Protocol Contract
+            </label>
+            <select
+              value={selectedTargetIndex}
+              onChange={(e) => {
+                setSelectedTargetIndex(Number(e.target.value));
                 setSelectedFuncIndex(0);
-                const defaultAmt = t.functions[0]?.defaultArgs?.amount || t.functions[0]?.defaultArgs?.budgetUsed || '0.1';
-                setAmountEth(defaultAmt);
               }}
-              className={"p-2.5 rounded-xl border text-left transition-all " +
-                (selectedTargetIndex === idx
-                  ? "bg-dark-800 border-garden-500 text-white ring-1 ring-garden-500/30"
-                  : "bg-dark-900/80 border-dark-750 text-gray-400 hover:text-gray-200 hover:bg-dark-800")}
+              className="w-full bg-surface-900 border border-surface-750 rounded-lg px-3 py-2 text-xs text-warm-100 focus:outline-none focus:border-amber-400"
             >
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] font-bold text-garden-400 uppercase">{t.category}</span>
-                <span className="text-[10px] font-mono text-gray-500">
-                  {t.address.slice(0, 4)}...{t.address.slice(-2)}
-                </span>
-              </div>
-              <div className="font-semibold text-xs text-gray-200 truncate">{t.name.split('(')[0]}</div>
-            </button>
-          ))}
-        </div>
-      </div>
+              {MOCK_TARGETS.map((t, idx) => (
+                <option key={t.address} value={idx}>
+                  {t.name} ({t.category})
+                </option>
+              ))}
+            </select>
+            <span className="text-[10px] font-mono text-warm-500 block mt-1">
+              {target.address}
+            </span>
+          </div>
 
-      {/* Function & Parameter Configuration */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-dark-900/80 p-3 rounded-xl border border-dark-750 text-xs">
-        <div>
-          <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">
-            Function Selector & Call
-          </label>
-          <select
-            value={selectedFuncIndex}
-            onChange={(e) => {
-              const idx = parseInt(e.target.value);
-              setSelectedFuncIndex(idx);
-              const defaultAmt = target.functions[idx]?.defaultArgs?.amount || target.functions[idx]?.defaultArgs?.budgetUsed || '0.1';
-              setAmountEth(defaultAmt);
-            }}
-            className="w-full bg-dark-800 border border-dark-700 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-garden-500 font-mono"
-          >
-            {target.functions.map((fn, idx) => (
-              <option key={fn.selector} value={idx}>
-                {fn.signature} ({fn.selector})
-              </option>
-            ))}
-          </select>
-          <span className="text-[10px] text-gray-500 mt-1 block">
-            {func.description}
-          </span>
+          {/* Function Selector */}
+          <div>
+            <label className="text-[10px] uppercase font-semibold text-warm-400 block mb-1">
+              Function Selector
+            </label>
+            <select
+              value={selectedFuncIndex}
+              onChange={(e) => setSelectedFuncIndex(Number(e.target.value))}
+              className="w-full bg-surface-900 border border-surface-750 rounded-lg px-3 py-2 text-xs text-warm-100 focus:outline-none focus:border-amber-400"
+            >
+              {target.functions.map((f, idx) => (
+                <option key={f.selector} value={idx}>
+                  {f.selector} — {f.signature.split('(')[0]}
+                </option>
+              ))}
+            </select>
+            <span className="text-[10px] text-warm-400 block mt-1 truncate">
+              {func.description}
+            </span>
+          </div>
         </div>
 
-        <div>
-          <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">
-            Spend Value (ETH)
-          </label>
-          <div className="relative">
+        {/* Value & Call Memo Arguments */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-1">
+          <div>
+            <label className="text-[10px] uppercase font-semibold text-warm-400 block mb-1">
+              Value (ETH)
+            </label>
             <input
-              type="number"
-              step="0.01"
-              min="0"
+              type="text"
               value={amountEth}
               onChange={(e) => setAmountEth(e.target.value)}
-              className="w-full bg-dark-800 border border-dark-700 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-garden-500 font-mono"
-              placeholder="0.05"
+              className="w-full bg-surface-900 border border-surface-750 rounded-lg px-3 py-2 text-xs text-warm-100 font-mono focus:outline-none focus:border-amber-400"
+              placeholder="0.0"
             />
-            <span className="absolute right-3 top-2 text-xs font-bold text-gray-400">ETH</span>
           </div>
-          <span className="text-[10px] text-gray-500 mt-1 block">
-            Max permitted for this node: {activePersonaNode.policy.maxSpendPerTx || '∞'} ETH
-          </span>
+
+          <div className="sm:col-span-2">
+            <label className="text-[10px] uppercase font-semibold text-warm-400 block mb-1">
+              Calldata Summary / Arguments Memo
+            </label>
+            <input
+              type="text"
+              value={customArgs}
+              onChange={(e) => setCustomArgs(e.target.value)}
+              className="w-full bg-surface-900 border border-surface-750 rounded-lg px-3 py-2 text-xs text-warm-100 focus:outline-none focus:border-amber-400"
+              placeholder="Memo / argument metadata"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Paymaster Sponsorship Badge */}
-      <div className="flex items-center justify-between bg-dark-900/60 px-3 py-2 rounded-xl border border-dark-750 text-xs">
-        <div className="flex items-center gap-2">
-          <Fuel className="w-4 h-4 text-garden-400" />
-          <span className="text-gray-300">ERC-4337 Paymaster:</span>
-          <span className="font-mono text-[11px] text-garden-400">
-            {PAYMASTER_CONTRACT_ADDRESS.slice(0, 8)}...
-          </span>
-        </div>
-        <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-          Gas Sponsored (0.00042 ETH saved)
-        </span>
+      {/* Primary Action Button */}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={handleExecute}
+          disabled={isExecuting}
+          className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm ${
+            isExecuting
+              ? 'bg-surface-800 text-warm-400 cursor-not-allowed'
+              : 'bg-amber-500 hover:bg-amber-400 text-surface-950'
+          }`}
+        >
+          {isExecuting ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin text-amber-500" />
+              <span>Verifying Lineage & Bundling UserOp...</span>
+            </>
+          ) : (
+            <>
+              <Send className="w-4 h-4" />
+              <span>Dispatch via Smart Account</span>
+            </>
+          )}
+        </button>
       </div>
 
-      {/* Execution Trigger Button */}
-      <button
-        onClick={handleExecute}
-        disabled={isExecuting}
-        className={"w-full py-3 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-all shadow-lg " +
-          (isExecuting
-            ? "bg-dark-700 cursor-not-allowed text-gray-400"
-            : isRevoked
-            ? "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 shadow-red-600/20"
-            : "bg-gradient-to-r from-garden-600 to-garden-500 hover:from-garden-500 hover:to-garden-400 shadow-garden-600/20")}
-      >
-        {isExecuting ? (
-          <>
-            <Loader2 className="w-4 h-4 animate-spin text-garden-400" />
-            <span>Validating Hierarchical Lineage & Executing UserOp...</span>
-          </>
-        ) : (
-          <>
-            <Send className="w-4 h-4" />
-            <span>
-              {isRevoked
-                ? 'Test Blocked Execution (Demonstrate Pruned Branch Error)'
-                : `Dispatch UserOp as ${activePersonaNode.label} (${amountEth} ETH)`}
-            </span>
-          </>
-        )}
-      </button>
-
-      {/* Last Execution Outcome Feedback */}
+      {/* Live Result Feedback Card */}
       {lastExecutedLog && (
         <div
-          className={"rounded-xl p-4 border text-xs space-y-2 " +
-            (lastExecutedLog.status === 'SUCCESS'
-              ? "bg-garden-950/20 border-garden-500/40 text-garden-200"
-              : "bg-red-950/20 border-red-500/40 text-red-200")}
+          className={`p-3.5 rounded-xl border text-xs space-y-2.5 transition-all ${
+            lastExecutedLog.status === 'SUCCESS'
+              ? 'bg-emerald-950/20 border-emerald-800/50'
+              : 'bg-rose-950/20 border-rose-800/50'
+          }`}
         >
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 font-bold text-sm">
+            <div className="flex items-center gap-2">
               {lastExecutedLog.status === 'SUCCESS' ? (
-                <>
-                  <CheckCircle2 className="w-4 h-4 text-garden-400" />
-                  <span>UserOperation Executed Successfully!</span>
-                </>
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               ) : (
-                <>
-                  <AlertTriangle className="w-4 h-4 text-red-400" />
-                  <span>UserOperation Reverted / Blocked</span>
-                </>
+                <AlertTriangle className="w-4 h-4 text-rose-400" />
               )}
-            </div>
-            <button
-              onClick={() => setShowRawUserOp(!showRawUserOp)}
-              className="text-[11px] font-semibold text-gray-400 hover:text-white flex items-center gap-1 bg-dark-900/80 px-2 py-1 rounded border border-dark-750"
-            >
-              <Code2 className="w-3 h-3" />
-              {showRawUserOp ? 'Hide UserOp JSON' : 'Inspect Raw UserOp'}
-            </button>
-          </div>
-
-          {lastExecutedLog.revertReason && (
-            <p className="font-semibold text-red-300 bg-red-950/50 p-2.5 rounded-lg border border-red-500/30">
-              {lastExecutedLog.revertReason}
-            </p>
-          )}
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-gray-300 pt-1">
-            <div>
-              <span className="text-gray-500 block text-[10px]">UserOp Hash</span>
-              <span className="font-mono">{lastExecutedLog.userOpHash.slice(0, 10)}...</span>
-            </div>
-            <div>
-              <span className="text-gray-500 block text-[10px]">Signer</span>
-              <span className="font-mono">{lastExecutedLog.callerSigner.slice(0, 8)}...</span>
-            </div>
-            <div>
-              <span className="text-gray-500 block text-[10px]">Target</span>
-              <span>{lastExecutedLog.targetName.split('(')[0]}</span>
-            </div>
-            <div>
-              <span className="text-gray-500 block text-[10px]">Gas Sponsored</span>
-              <span className="text-emerald-400 font-bold">
-                {lastExecutedLog.gasSponsored ? 'Yes (100%)' : 'No'}
+              <span
+                className={`font-semibold ${
+                  lastExecutedLog.status === 'SUCCESS' ? 'text-emerald-300' : 'text-rose-300'
+                }`}
+              >
+                {lastExecutedLog.status === 'SUCCESS'
+                  ? 'UserOperation Successfully Validated & Executed'
+                  : `Execution Reverted: ${lastExecutedLog.revertReason}`}
               </span>
             </div>
+
+            <span className="text-[10px] font-mono text-warm-400">
+              {new Date(lastExecutedLog.timestamp).toLocaleTimeString()}
+            </span>
           </div>
 
-          {/* Raw UserOp Inspector Drawer */}
-          {showRawUserOp && lastExecutedLog.rawUserOp && (
-            <div className="mt-3 pt-3 border-t border-dark-750">
-              <span className="text-[10px] font-bold uppercase text-gray-400 block mb-1">
-                ERC-4337 UserOperation Struct:
-              </span>
-              <pre className="bg-dark-900 p-3 rounded-lg text-[10px] font-mono text-gray-300 overflow-x-auto border border-dark-750 max-h-48">
-                {JSON.stringify(lastExecutedLog.rawUserOp, null, 2)}
-              </pre>
+          {/* Key Details */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] pt-1 text-warm-300">
+            <div>
+              <span className="text-warm-500 block text-[10px]">UserOp Hash</span>
+              <span className="font-mono">{lastExecutedLog.userOpHash.slice(0, 8)}...</span>
             </div>
-          )}
+            <div>
+              <span className="text-warm-500 block text-[10px]">Gas Fee</span>
+              <span className="font-mono text-emerald-400 font-medium">0.00 ETH (Sponsored)</span>
+            </div>
+            <div>
+              <span className="text-warm-500 block text-[10px]">Value Disbursed</span>
+              <span className="font-mono">{lastExecutedLog.valueEth} ETH</span>
+            </div>
+            <div>
+              <span className="text-warm-500 block text-[10px]">Ancestors Verified</span>
+              <span className="font-mono">{lastExecutedLog.lineagePath.length} Nodes</span>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -1,198 +1,155 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useGarden } from '../context/GardenContext';
-import { ExecutionLog } from '../types/garden';
 import {
-  ListFilter,
+  FileText,
   CheckCircle2,
   AlertTriangle,
-  Code2,
-  Trash2,
+  Fuel,
   ExternalLink,
   ChevronDown,
   ChevronUp,
-  Fuel,
-  ArrowRight
+  Trash2
 } from 'lucide-react';
 
 export const ActivityLog: React.FC = () => {
   const { executionLogs, clearLogs } = useGarden();
-  const [filter, setFilter] = useState<'ALL' | 'SUCCESS' | 'REVERTED'>('ALL');
-  const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
+  const [expandedLogId, setExpandedLogId] = React.useState<string | null>(null);
 
-  const filteredLogs = executionLogs.filter((log) => {
-    if (filter === 'ALL') return true;
-    return log.status === filter;
-  });
+  if (executionLogs.length === 0) {
+    return (
+      <div className="bg-surface-900 rounded-2xl border border-surface-750 p-6 text-center shadow-sm">
+        <FileText className="w-7 h-7 text-warm-500 mx-auto mb-2" />
+        <h4 className="text-warm-200 font-semibold text-sm">No Audit Logs Yet</h4>
+        <p className="text-warm-400 text-xs mt-1">
+          Dispatch a UserOperation from the Execution Console above to generate live cryptographic audit traces.
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-dark-850 rounded-2xl border border-dark-750 p-5 shadow-xl space-y-4">
+    <div className="bg-surface-900 rounded-2xl border border-surface-750 p-5 shadow-sm space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-bold text-white tracking-tight">
-            Live Execution & Audit Trail
+          <FileText className="w-4 h-4 text-amber-400" />
+          <h3 className="text-sm font-bold text-warm-50 tracking-tight">
+            Cryptographic Audit Ledger
           </h3>
-          <span className="text-xs px-2 py-0.5 rounded-full bg-dark-800 text-gray-400 border border-dark-700">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-surface-800 text-warm-300 border border-surface-750">
             {executionLogs.length} Events
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Filter */}
-          <div className="flex items-center bg-dark-900 rounded-lg p-0.5 border border-dark-750 text-xs">
-            <button
-              onClick={() => setFilter('ALL')}
-              className={"px-2.5 py-1 rounded-md font-medium transition-colors " +
-                (filter === 'ALL' ? "bg-dark-750 text-white" : "text-gray-400 hover:text-white")}
-            >
-              All
-            </button>
-            <button
-              onClick={() => setFilter('SUCCESS')}
-              className={"px-2.5 py-1 rounded-md font-medium transition-colors " +
-                (filter === 'SUCCESS' ? "bg-garden-500/20 text-garden-400" : "text-gray-400 hover:text-white")}
-            >
-              Success
-            </button>
-            <button
-              onClick={() => setFilter('REVERTED')}
-              className={"px-2.5 py-1 rounded-md font-medium transition-colors " +
-                (filter === 'REVERTED' ? "bg-red-500/20 text-red-400" : "text-gray-400 hover:text-white")}
-            >
-              Blocked
-            </button>
-          </div>
-
-          {executionLogs.length > 0 && (
-            <button
-              onClick={clearLogs}
-              title="Clear log history"
-              className="p-1.5 text-gray-500 hover:text-gray-300 rounded-lg hover:bg-dark-800"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          )}
-        </div>
+        <button
+          onClick={clearLogs}
+          className="text-warm-400 hover:text-warm-200 text-xs flex items-center gap-1 transition-colors"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+          <span>Clear Logs</span>
+        </button>
       </div>
 
-      {/* Log List */}
-      {filteredLogs.length === 0 ? (
-        <div className="text-center py-8 text-xs text-gray-500 bg-dark-900/40 rounded-xl border border-dark-750">
-          No UserOperation transactions recorded yet. Use the Execution Arena above to test sub-account actions!
-        </div>
-      ) : (
-        <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
-          {filteredLogs.map((log) => {
-            const isExpanded = expandedLogId === log.id;
-            const timeStr = new Date(log.timestamp * 1000).toLocaleTimeString();
+      {/* Logs List */}
+      <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+        {executionLogs.map((log) => {
+          const isExpanded = expandedLogId === log.id;
+          const isSuccess = log.status === 'SUCCESS';
 
-            return (
+          return (
+            <div
+              key={log.id}
+              className={`rounded-xl border transition-all text-xs ${
+                isSuccess
+                  ? 'bg-surface-950/60 border-surface-800 hover:border-surface-700'
+                  : 'bg-rose-950/20 border-rose-900/40 hover:border-rose-800/60'
+              }`}
+            >
               <div
-                key={log.id}
-                className={"rounded-xl p-3 border transition-all text-xs " +
-                  (log.status === 'SUCCESS'
-                    ? "bg-dark-900/90 border-dark-750 hover:border-dark-600"
-                    : "bg-red-950/20 border-red-500/30 hover:border-red-500/40")}
+                onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
+                className="p-3 flex items-center justify-between cursor-pointer gap-2"
               >
-                <div className="flex items-center justify-between gap-2 mb-1.5">
-                  <div className="flex items-center gap-2">
-                    {log.status === 'SUCCESS' ? (
-                      <CheckCircle2 className="w-4 h-4 text-garden-400 shrink-0" />
-                    ) : (
-                      <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
-                    )}
-                    <span className="font-bold text-white">{log.nodeLabel}</span>
-                    <span className="text-gray-500 text-[10px]">•</span>
-                    <span className="text-gray-400 font-mono text-[10px]">{timeStr}</span>
-                  </div>
+                <div className="flex items-center gap-2.5 min-w-0">
+                  {isSuccess ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  ) : (
+                    <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+                  )}
 
-                  <div className="flex items-center gap-2">
-                    {log.gasSponsored && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
-                        <Fuel className="w-2.5 h-2.5" />
-                        Sponsored
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-warm-100 truncate">{log.nodeLabel}</span>
+                      <span className="text-[10px] font-mono text-warm-500">
+                        {new Date(log.timestamp).toLocaleTimeString()}
                       </span>
-                    )}
-                    <button
-                      onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
-                      className="text-gray-400 hover:text-white p-1 rounded hover:bg-dark-800"
-                    >
-                      {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                    </button>
+                    </div>
+                    <span className="text-[11px] text-warm-400 block truncate">
+                      {log.targetName} • {log.functionSelector}
+                    </span>
                   </div>
                 </div>
 
-                {/* Call summary */}
-                <div className="flex items-center justify-between text-gray-300">
-                  <div className="truncate max-w-[280px] sm:max-w-md">
-                    <span className="text-gray-500">Target:</span> {log.targetName.split('(')[0]}
-                    <span className="text-gray-500 ml-2">Func:</span> <code className="font-mono text-garden-400">{log.functionSignature.split('(')[0]}</code>
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="text-right">
+                    <span className="font-mono text-warm-200 block text-[11px]">
+                      {log.valueEth} ETH
+                    </span>
+                    <span className="text-[9px] font-medium text-emerald-400 uppercase">
+                      Sponsored
+                    </span>
                   </div>
-                  <div className="font-mono font-semibold text-white shrink-0">
-                    {log.valueEth} ETH
-                  </div>
+
+                  {isExpanded ? (
+                    <ChevronUp className="w-4 h-4 text-warm-400" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-warm-400" />
+                  )}
                 </div>
-
-                {/* Error reason if reverted */}
-                {log.revertReason && (
-                  <div className="mt-2 p-2 rounded bg-red-950/60 border border-red-500/30 text-red-300 text-[11px] font-mono">
-                    {log.revertReason}
-                  </div>
-                )}
-
-                {/* Expanded Details */}
-                {isExpanded && (
-                  <div className="mt-3 pt-3 border-t border-dark-750 space-y-2 text-[11px]">
-                    {/* Lineage */}
-                    <div>
-                      <span className="text-gray-400 block text-[10px] uppercase font-bold mb-1">
-                        Lineage Path Verified:
-                      </span>
-                      <div className="flex items-center flex-wrap gap-1">
-                        {log.lineagePath.map((p, i) => (
-                          <React.Fragment key={i}>
-                            <span className="px-1.5 py-0.5 rounded bg-dark-800 text-gray-300 border border-dark-700 font-mono">
-                              {p}
-                            </span>
-                            {i < log.lineagePath.length - 1 && (
-                              <ArrowRight className="w-2.5 h-2.5 text-gray-600" />
-                            )}
-                          </React.Fragment>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 text-gray-300 font-mono text-[10px] pt-1">
-                      <div>
-                        <span className="text-gray-500 block">UserOp Hash:</span>
-                        <span className="truncate block">{log.userOpHash}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500 block">Signer EOA:</span>
-                        <span className="truncate block">{log.callerSigner}</span>
-                      </div>
-                    </div>
-
-                    {/* Raw UserOp JSON */}
-                    {log.rawUserOp && (
-                      <div className="pt-1">
-                        <span className="text-gray-500 block text-[10px] font-bold uppercase mb-1">
-                          Raw ERC-4337 UserOp:
-                        </span>
-                        <pre className="bg-dark-900 p-2.5 rounded-lg border border-dark-750 overflow-x-auto text-[10px] font-mono text-gray-300 max-h-36">
-                          {JSON.stringify(log.rawUserOp, null, 2)}
-                        </pre>
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
-            );
-          })}
-        </div>
-      )}
+
+              {/* Expandable Trace Details */}
+              {isExpanded && (
+                <div className="p-3 pt-0 border-t border-surface-850 text-[11px] space-y-2 mt-1">
+                  {!isSuccess && (
+                    <div className="p-2 rounded-lg bg-rose-950/40 border border-rose-800 text-rose-300">
+                      <strong>Revert Reason:</strong> {log.revertReason}
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-2 text-warm-400">
+                    <div>
+                      <span className="text-warm-500 block text-[10px]">UserOp Hash:</span>
+                      <span className="font-mono text-warm-300">{log.userOpHash}</span>
+                    </div>
+                    <div>
+                      <span className="text-warm-500 block text-[10px]">Target Contract:</span>
+                      <span className="font-mono text-warm-300">{log.targetAddress}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className="text-warm-500 block text-[10px] mb-1">
+                      Lineage Check Chain:
+                    </span>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {log.lineagePath.map((nodeLabel, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-0.5 rounded bg-surface-900 border border-surface-750 font-mono text-[10px] text-warm-300"
+                        >
+                          {nodeLabel}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

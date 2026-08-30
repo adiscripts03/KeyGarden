@@ -12,13 +12,10 @@ import {
   Scissors,
   Plus,
   Zap,
-  Info,
-  AlertOctagon,
-  Clock,
-  Coins,
   CheckCircle2,
-  Lock,
-  Flame
+  AlertTriangle,
+  Clock,
+  Layers
 } from 'lucide-react';
 
 interface TreeVisualizerProps {
@@ -41,15 +38,15 @@ export const TreeVisualizer: React.FC<TreeVisualizerProps> = ({
   const getRoleIcon = (role: GardenNode['role']) => {
     switch (role) {
       case 'Root Treasury':
-        return <Crown className="w-4 h-4 text-amber-400" />;
+        return <Crown className="w-3.5 h-3.5 text-amber-400" />;
       case 'Department Admin':
-        return <Shield className="w-4 h-4 text-blue-400" />;
+        return <Shield className="w-3.5 h-3.5 text-warm-300" />;
       case 'Team Lead':
-        return <UserCheck className="w-4 h-4 text-purple-400" />;
+        return <UserCheck className="w-3.5 h-3.5 text-warm-300" />;
       case 'Ephemeral Bot':
-        return <Bot className="w-4 h-4 text-garden-400" />;
+        return <Bot className="w-3.5 h-3.5 text-emerald-400" />;
       default:
-        return <UserCheck className="w-4 h-4 text-gray-400" />;
+        return <UserCheck className="w-3.5 h-3.5 text-warm-400" />;
     }
   };
 
@@ -71,176 +68,172 @@ export const TreeVisualizer: React.FC<TreeVisualizerProps> = ({
         {/* Node Card */}
         <div
           onClick={() => selectNode(node.nodeId)}
-          className={"w-72 sm:w-80 rounded-2xl p-4 transition-all duration-300 cursor-pointer relative " +
-            (isRevoked
-              ? "bg-red-950/20 border-2 border-red-500/50 shadow-lg shadow-red-950/30 grayscale-[20%]"
+          className={`w-72 rounded-xl p-4 transition-all duration-200 cursor-pointer relative text-left ${
+            isRevoked
+              ? 'bg-surface-950/80 border border-rose-900/50 opacity-75'
               : isSelected
-              ? "bg-dark-800 border-2 border-garden-500 shadow-xl shadow-garden-500/10 ring-2 ring-garden-500/30"
-              : "bg-dark-850 border border-dark-700 hover:border-dark-600 hover:bg-dark-800/90 shadow-md") +
-            (isActivePersona ? " ring-2 ring-amber-400/80 shadow-amber-400/10" : "")}
+              ? 'bg-surface-850 border-2 border-amber-500/80 shadow-md ring-1 ring-amber-500/20'
+              : 'bg-surface-900 border border-surface-750 hover:border-surface-700 hover:bg-surface-850/80'
+          } ${isActivePersona && !isRevoked ? 'border-amber-400' : ''}`}
         >
-          {/* Active Persona Badge */}
-          {isActivePersona && (
-            <div className="absolute -top-3 left-4 px-2.5 py-0.5 rounded-full bg-amber-500 text-dark-900 font-bold text-[10px] uppercase tracking-wider flex items-center gap-1 shadow-md">
-              <Zap className="w-3 h-3 fill-current" />
-              Active Signer
-            </div>
-          )}
-
-          {/* Revoked / Pruned Banner */}
-          {isRevoked && (
-            <div className="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full bg-red-500 text-white font-bold text-[10px] uppercase tracking-wider flex items-center gap-1 shadow-md">
-              <AlertOctagon className="w-3 h-3" />
-              Pruned / Revoked
-            </div>
-          )}
-
-          {/* Header: Role & Depth Badge */}
+          {/* Top Row: Role Badge & Active Indicator */}
           <div className="flex items-center justify-between gap-2 mb-2">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-dark-900 border border-dark-700">
-                {getRoleIcon(node.role)}
-              </div>
-              <span className="text-xs font-semibold text-gray-300">{node.role}</span>
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-surface-800 text-[11px] font-medium text-warm-300 border border-surface-750">
+              {getRoleIcon(node.role)}
+              <span>{node.role}</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-dark-900 text-gray-400 border border-dark-750">
-                L{node.depth}
-              </span>
+
+            <div className="flex items-center gap-1">
+              {isActivePersona && !isRevoked && (
+                <span className="flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-400/10 text-amber-300 border border-amber-400/20">
+                  <Zap className="w-2.5 h-2.5 fill-current" />
+                  Signer
+                </span>
+              )}
+              {isRevoked && (
+                <span className="flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-300 border border-rose-500/20">
+                  <AlertTriangle className="w-2.5 h-2.5" />
+                  Pruned
+                </span>
+              )}
             </div>
           </div>
 
-          {/* Title / Label */}
-          <h3 className="font-bold text-sm text-white truncate mb-1">{node.label}</h3>
-
-          {/* Signer EOA */}
-          <div className="text-[11px] font-mono text-gray-400 flex items-center justify-between mb-3 bg-dark-900/80 px-2.5 py-1 rounded-lg border border-dark-750">
-            <span className="text-gray-400">Signer:</span>
-            <span className="text-gray-300">
+          {/* Node Title & Signer Address */}
+          <div className="mb-3">
+            <h3 className="text-sm font-semibold text-warm-50 tracking-tight leading-snug">
+              {node.label}
+            </h3>
+            <span className="text-[11px] font-mono text-warm-400 block mt-0.5">
               {node.signerAddress.slice(0, 6)}...{node.signerAddress.slice(-4)}
             </span>
           </div>
 
-          {/* Policy Constraints / Progress Bar */}
-          <div className="space-y-1.5 mb-3">
+          {/* Budget & Spend Progress */}
+          <div className="space-y-1.5 mb-3 bg-surface-950/60 p-2.5 rounded-lg border border-surface-800">
             <div className="flex items-center justify-between text-[11px]">
-              <span className="text-gray-400 flex items-center gap-1">
-                <Coins className="w-3 h-3 text-garden-400" />
-                Budget Used:
-              </span>
-              <span className="font-mono font-medium text-gray-200">
-                {spentAmount.toFixed(2)} / {totalBudget > 0 ? totalBudget + ' ETH' : '∞'}
+              <span className="text-warm-400">Budget Allocated:</span>
+              <span className="font-mono text-warm-200 font-medium">
+                {totalBudget > 0 ? `${spentAmount.toFixed(2)} / ${totalBudget} ETH` : 'Unlimited'}
               </span>
             </div>
             {totalBudget > 0 && (
-              <div className="w-full bg-dark-900 rounded-full h-1.5 overflow-hidden border border-dark-750">
+              <div className="w-full bg-surface-800 h-1.5 rounded-full overflow-hidden">
                 <div
-                  className={"h-full rounded-full transition-all duration-500 " +
-                    (isRevoked
-                      ? "bg-red-500"
-                      : budgetPct > 80
-                      ? "bg-amber-400"
-                      : "bg-garden-500")}
-                  style={{ width: budgetPct + "%" }}
+                  className={`h-full transition-all duration-300 ${
+                    budgetPct >= 90
+                      ? 'bg-rose-500'
+                      : budgetPct >= 60
+                      ? 'bg-amber-500'
+                      : 'bg-emerald-500'
+                  }`}
+                  style={{ width: `${budgetPct}%` }}
                 />
               </div>
             )}
           </div>
 
-          {/* Policy Restrictions Summary Pills */}
-          <div className="flex flex-wrap gap-1.5 text-[10px] mb-3">
-            <span className="px-2 py-0.5 rounded bg-dark-900 text-gray-300 border border-dark-750">
-              Max/Tx: {node.policy.maxSpendPerTx ? node.policy.maxSpendPerTx + ' ETH' : 'Unset'}
-            </span>
-            <span className="px-2 py-0.5 rounded bg-dark-900 text-gray-300 border border-dark-750">
-              Targets: {node.policy.allowedTargets?.length ? node.policy.allowedTargets.length : 'All'}
-            </span>
-            <span className="px-2 py-0.5 rounded bg-dark-900 text-gray-300 border border-dark-750 flex items-center gap-1">
-              <Clock className="w-2.5 h-2.5 text-gray-400" />
-              {node.policy.validUntil > 0 ? 'Expiring' : 'Permanent'}
-            </span>
+          {/* Targets & Time Indicators */}
+          <div className="flex items-center justify-between text-[11px] text-warm-400 pt-1 border-t border-surface-800">
+            <div className="flex items-center gap-1">
+              <Layers className="w-3 h-3 text-warm-400" />
+              <span>
+                {node.policy.allowedTargets.length === 0
+                  ? 'All Targets'
+                  : `${node.policy.allowedTargets.length} Whitelisted`}
+              </span>
+            </div>
+
+            {node.policy.validUntil > 0 && (
+              <div className="flex items-center gap-1 font-mono text-[10px]">
+                <Clock className="w-3 h-3" />
+                <span className={isExpired ? 'text-rose-400 font-bold' : ''}>
+                  {isExpired ? 'Expired' : `${Math.ceil((node.policy.validUntil - now) / 86400)}d left`}
+                </span>
+              </div>
+            )}
           </div>
 
-          {/* Quick Actions Footer */}
-          <div className="pt-2 border-t border-dark-750 flex items-center justify-between gap-1.5" onClick={(e) => e.stopPropagation()}>
-            {/* Act as persona */}
-            <button
-              onClick={() => setActivePersona(node.nodeId)}
-              disabled={isActivePersona}
-              className={"px-2.5 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1 transition-colors " +
-                (isActivePersona
-                  ? "bg-amber-500/10 text-amber-400 border border-amber-500/20 cursor-default"
-                  : "bg-dark-900 text-gray-300 hover:text-white hover:bg-dark-750 border border-dark-700")}
-            >
-              <Zap className="w-3 h-3 text-amber-400" />
-              {isActivePersona ? 'Acting' : 'Act'}
-            </button>
+          {/* Quick Action Footer on Card */}
+          <div className="mt-3 pt-2 border-t border-surface-800 flex items-center justify-between gap-1 text-[11px]">
+            {!isActivePersona && !isRevoked ? (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActivePersona(node.nodeId);
+                }}
+                className="text-amber-400 hover:text-amber-300 font-medium flex items-center gap-1 transition-colors"
+              >
+                <Zap className="w-3 h-3" />
+                <span>Use Signer</span>
+              </button>
+            ) : (
+              <span className="text-[11px] text-warm-400 font-normal">
+                {isRevoked ? 'Signer Disabled' : 'Current Active Signer'}
+              </span>
+            )}
 
             <div className="flex items-center gap-1">
-              {/* Issue Child Account */}
               {!isRevoked && (
                 <button
-                  onClick={() => onOpenPolicyBuilder(node.nodeId)}
-                  title="Issue Child Sub-Account (Narrowed Policy)"
-                  className="p-1.5 text-garden-400 hover:text-white bg-garden-500/10 hover:bg-garden-600 rounded-lg border border-garden-500/20 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenPolicyBuilder(node.nodeId);
+                  }}
+                  title="Issue child sub-account"
+                  className="p-1 text-warm-400 hover:text-warm-100 hover:bg-surface-750 rounded transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" />
                 </button>
               )}
 
-              {/* Prune / Revoke Branch (Available for non-root nodes) */}
-              {node.depth > 0 && !isRevoked && (
+              {node.parentNodeId && !isRevoked && (
                 <button
-                  onClick={() => onOpenPruneModal(node.nodeId)}
-                  title="Prune / Revoke This Branch (Cascades to all children)"
-                  className="p-1.5 text-red-400 hover:text-white bg-red-500/10 hover:bg-red-600 rounded-lg border border-red-500/20 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenPruneModal(node.nodeId);
+                  }}
+                  title="Prune branch (cascading revoke)"
+                  className="p-1 text-warm-400 hover:text-rose-400 hover:bg-surface-750 rounded transition-colors"
                 >
                   <Scissors className="w-3.5 h-3.5" />
                 </button>
               )}
-
-              {/* Inspect */}
-              <button
-                onClick={() => selectNode(node.nodeId)}
-                title="Inspect Policy & Lineage Details"
-                className="p-1.5 text-gray-400 hover:text-white bg-dark-900 hover:bg-dark-750 rounded-lg border border-dark-700 transition-colors"
-              >
-                <Info className="w-3.5 h-3.5" />
-              </button>
             </div>
           </div>
         </div>
 
-        {/* Children Render */}
+        {/* Child Subtree Rendering */}
         {node.children && node.children.length > 0 && (
-          <div className="flex flex-col items-center mt-6 w-full">
-            {/* Vertical stem from parent */}
-            <div className={"w-0.5 h-6 " + (isRevoked ? "bg-red-500/40" : "bg-garden-500/40")} />
+          <div className="flex flex-col items-center w-full">
+            {/* Vertical connector from parent card */}
+            <div className={`w-0.5 h-6 ${isRevoked ? 'bg-rose-900/60' : 'bg-surface-700'}`} />
 
-            {/* Horizontal branch bar */}
-            <div className="flex items-start justify-center relative w-full pt-4">
+            {/* Children Row */}
+            <div className="flex items-start justify-center gap-6 relative pt-2">
+              {/* Horizontal bridge line for multiple children */}
               {node.children.length > 1 && (
                 <div
-                  className={"absolute top-0 h-0.5 " + (isRevoked ? "bg-red-500/30" : "bg-garden-500/30")}
+                  className={`absolute top-0 left-1/2 -translate-x-1/2 h-0.5 ${
+                    isRevoked ? 'bg-rose-900/60' : 'bg-surface-700'
+                  }`}
                   style={{
-                    left: (100 / (node.children.length * 2)) + "%",
-                    right: (100 / (node.children.length * 2)) + "%"
+                    width: `calc(100% - ${288 / 1.5}px)`
                   }}
                 />
               )}
 
-              <div className="flex flex-wrap items-start justify-center gap-8 sm:gap-12 w-full">
-                {node.children.map((child) => (
-                  <div key={child.nodeId} className="flex flex-col items-center relative">
-                    {/* Vertical stem into child */}
-                    <div
-                      className={"w-0.5 h-4 -mt-4 mb-0 " +
-                        (isRevoked || child.isRevoked ? "bg-red-500/40" : "bg-garden-500/40")}
-                    />
-                    {renderNode(child)}
-                  </div>
-                ))}
-              </div>
+              {node.children.map((child) => (
+                <div key={child.nodeId} className="flex flex-col items-center">
+                  {/* Vertical drop line to child */}
+                  <div
+                    className={`w-0.5 h-4 -mt-2 mb-2 ${
+                      isRevoked || child.isRevoked ? 'bg-rose-900/60' : 'bg-surface-700'
+                    }`}
+                  />
+                  {renderNode(child)}
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -249,10 +242,8 @@ export const TreeVisualizer: React.FC<TreeVisualizerProps> = ({
   };
 
   return (
-    <div className="w-full overflow-x-auto pb-12 pt-6 px-4 flex justify-center min-h-[480px]">
-      <div className="inline-block min-w-max">
-        {renderNode(tree)}
-      </div>
+    <div className="p-6 overflow-x-auto min-h-[420px] flex items-center justify-center bg-surface-950/40">
+      <div className="min-w-max py-4">{renderNode(tree)}</div>
     </div>
   );
 };

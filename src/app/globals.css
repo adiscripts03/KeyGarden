@@ -3,32 +3,33 @@
 @tailwind utilities;
 
 :root {
-  --background: #0a0d0c;
-  --foreground: #f3f4f6;
+  --background: #121110;
+  --foreground: #fafaf9;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   overflow-x: hidden;
+  letter-spacing: -0.01em;
 }
 
-/* Custom modern scrollbars */
+/* Custom warm scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0e1312;
+  background: #171615;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2b3a36;
+  background: #302d29;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f534e;
+  background: #524d47;
 }

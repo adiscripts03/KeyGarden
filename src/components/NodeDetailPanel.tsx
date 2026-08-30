@@ -5,23 +5,18 @@ import { useGarden } from '../context/GardenContext';
 import { isNodeAndAncestorsActive, getNodeLineage } from '../lib/garden-engine';
 import { MOCK_TARGETS } from '../lib/constants';
 import {
-  Crown,
-  Shield,
-  UserCheck,
-  Bot,
-  Coins,
-  Clock,
-  CheckCircle2,
-  AlertOctagon,
-  FileCode,
   Layers,
   Zap,
   Scissors,
   Plus,
   ArrowRight,
-  ExternalLink,
   Copy,
-  Check
+  Check,
+  CheckCircle2,
+  AlertTriangle,
+  Clock,
+  Shield,
+  FileCode
 } from 'lucide-react';
 
 interface NodeDetailPanelProps {
@@ -44,11 +39,11 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
 
   if (!selectedNode) {
     return (
-      <div className="bg-dark-850 rounded-2xl border border-dark-750 p-6 flex flex-col items-center justify-center text-center h-full min-h-[350px]">
-        <Layers className="w-10 h-10 text-gray-600 mb-3" />
-        <h4 className="text-gray-300 font-semibold text-sm">No Account Selected</h4>
-        <p className="text-gray-500 text-xs mt-1 max-w-xs">
-          Click on any node in the Account Tree to inspect its policy limits, lineage proof, and whitelisted selectors.
+      <div className="bg-surface-900 rounded-2xl border border-surface-750 p-6 flex flex-col items-center justify-center text-center h-full min-h-[360px]">
+        <Layers className="w-8 h-8 text-warm-500 mb-3" />
+        <h4 className="text-warm-200 font-semibold text-sm">No Account Selected</h4>
+        <p className="text-warm-400 text-xs mt-1 max-w-xs">
+          Click any node on the tree to inspect its cryptographic lineage, remaining budget, and narrowing rules.
         </p>
       </div>
     );
@@ -71,28 +66,28 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
   };
 
   return (
-    <div className="bg-dark-850 rounded-2xl border border-dark-750 p-5 shadow-xl space-y-5">
+    <div className="bg-surface-900 rounded-2xl border border-surface-750 p-5 shadow-sm space-y-5">
       {/* Top Header */}
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-dark-900 text-gray-400 border border-dark-750">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-800 text-warm-300 border border-surface-750">
               Depth L{selectedNode.depth}
             </span>
-            <span className="text-xs font-semibold text-gray-300">{selectedNode.role}</span>
+            <span className="text-xs font-medium text-warm-300">{selectedNode.role}</span>
           </div>
-          <h3 className="text-lg font-bold text-white tracking-tight">{selectedNode.label}</h3>
+          <h3 className="text-base font-bold text-warm-50 tracking-tight">{selectedNode.label}</h3>
         </div>
 
         {/* Status Badge */}
         <div>
           {isRevoked ? (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/20">
-              <AlertOctagon className="w-3.5 h-3.5" />
-              Revoked
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-500/10 text-rose-300 border border-rose-500/20">
+              <AlertTriangle className="w-3.5 h-3.5" />
+              Branch Pruned
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-garden-500/10 text-garden-400 border border-garden-500/20">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
               <CheckCircle2 className="w-3.5 h-3.5" />
               Active & Valid
             </span>
@@ -100,140 +95,131 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
         </div>
       </div>
 
-      {/* Revocation notice if inactive */}
-      {isRevoked && (
-        <div className="bg-red-950/30 border border-red-500/30 rounded-xl p-3 text-xs text-red-300 space-y-1">
-          <div className="font-semibold flex items-center gap-1.5">
-            <AlertOctagon className="w-4 h-4 text-red-400 shrink-0" />
-            Execution Blocked
-          </div>
-          <p className="text-red-300/80 pl-5.5">{status.reason}</p>
-        </div>
-      )}
-
-      {/* Lineage Path */}
-      <div className="bg-dark-900/80 rounded-xl p-3 border border-dark-750">
-        <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-2">
-          Hierarchical Lineage Chain (Proof Path)
+      {/* Lineage Trail */}
+      <div className="space-y-1.5 bg-surface-950/70 p-3 rounded-xl border border-surface-800">
+        <span className="text-[10px] uppercase font-semibold text-warm-400 tracking-wider block">
+          Cryptographic Lineage Path
         </span>
-        <div className="flex items-center flex-wrap gap-1.5 text-xs">
-          {lineage.map((ancestor, idx) => (
-            <React.Fragment key={ancestor.nodeId}>
-              <span
-                className={"px-2 py-0.5 rounded font-medium " +
-                  (ancestor.nodeId === selectedNode.nodeId
-                    ? "bg-garden-500/20 text-garden-300 border border-garden-500/30"
-                    : ancestor.isRevoked
-                    ? "bg-red-900/30 text-red-300 border border-red-800"
-                    : "bg-dark-800 text-gray-300 border border-dark-700")}
-              >
-                {ancestor.label}
-              </span>
-              {idx < lineage.length - 1 && (
-                <ArrowRight className="w-3 h-3 text-gray-500 shrink-0" />
-              )}
-            </React.Fragment>
-          ))}
+        <div className="flex items-center flex-wrap gap-1 text-xs">
+          {lineage.map((item, idx) => {
+            const isItemRevoked = item.isRevoked;
+            return (
+              <React.Fragment key={item.nodeId}>
+                <span
+                  className={`px-2 py-0.5 rounded-md font-mono text-[11px] flex items-center gap-1 ${
+                    isItemRevoked
+                      ? 'bg-rose-950/50 text-rose-300 border border-rose-800'
+                      : 'bg-surface-850 text-warm-200 border border-surface-750'
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      isItemRevoked ? 'bg-rose-500' : 'bg-emerald-500'
+                    }`}
+                  />
+                  {item.label}
+                </span>
+                {idx < lineage.length - 1 && (
+                  <ArrowRight className="w-3 h-3 text-warm-500 shrink-0" />
+                )}
+              </React.Fragment>
+            );
+          })}
         </div>
       </div>
 
-      {/* Addresses */}
+      {/* Signer Key & Smart Account Addresses */}
       <div className="space-y-2 text-xs">
-        <div className="bg-dark-900/80 p-2.5 rounded-xl border border-dark-750 flex items-center justify-between">
+        <div className="flex items-center justify-between p-2.5 rounded-xl bg-surface-950/40 border border-surface-800">
           <div>
-            <span className="text-gray-400 text-[10px] block">Authorized Signer EOA / Key</span>
-            <span className="font-mono text-gray-200 text-xs">
+            <span className="text-[10px] text-warm-400 block">Authorized Signer Key</span>
+            <span className="font-mono text-warm-200 text-[11px]">
               {selectedNode.signerAddress}
             </span>
           </div>
           <button
             onClick={() => copyToClipboard(selectedNode.signerAddress, 'signer')}
-            className="p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-dark-800"
+            className="p-1.5 text-warm-400 hover:text-white rounded-lg hover:bg-surface-800 transition-colors"
           >
-            {copiedKey === 'signer' ? <Check className="w-3.5 h-3.5 text-garden-400" /> : <Copy className="w-3.5 h-3.5" />}
-          </button>
-        </div>
-
-        <div className="bg-dark-900/80 p-2.5 rounded-xl border border-dark-750 flex items-center justify-between">
-          <div>
-            <span className="text-gray-400 text-[10px] block">Smart Account Treasury</span>
-            <span className="font-mono text-gray-200 text-xs">
-              {selectedNode.smartAccount}
-            </span>
-          </div>
-          <button
-            onClick={() => copyToClipboard(selectedNode.smartAccount, 'smartAccount')}
-            className="p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-dark-800"
-          >
-            {copiedKey === 'smartAccount' ? <Check className="w-3.5 h-3.5 text-garden-400" /> : <Copy className="w-3.5 h-3.5" />}
+            {copiedKey === 'signer' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
           </button>
         </div>
       </div>
 
-      {/* Budget & Spend Progress */}
-      <div className="space-y-2">
+      {/* Policy Limits & Budget Telemetry */}
+      <div className="space-y-3 bg-surface-950/50 p-3.5 rounded-xl border border-surface-800">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-gray-400 flex items-center gap-1.5 font-medium">
-            <Coins className="w-4 h-4 text-garden-400" />
-            Budget Utilization
-          </span>
-          <span className="font-mono text-gray-200">
-            {spentAmount.toFixed(3)} / {totalBudget > 0 ? totalBudget + ' ETH' : 'Uncapped'}
-          </span>
+          <span className="font-semibold text-warm-200">Policy Envelope</span>
+          <span className="text-[11px] text-warm-400">Enforced Onchain</span>
         </div>
 
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="bg-surface-900 p-2.5 rounded-lg border border-surface-800">
+            <span className="text-[10px] text-warm-400 block">Max Spend / Tx</span>
+            <span className="font-mono text-warm-100 font-medium">
+              {parseFloat(selectedNode.policy.maxSpendPerTx || '0') > 0
+                ? `${selectedNode.policy.maxSpendPerTx} ETH`
+                : 'No Tx Limit'}
+            </span>
+          </div>
+
+          <div className="bg-surface-900 p-2.5 rounded-lg border border-surface-800">
+            <span className="text-[10px] text-warm-400 block">Remaining Budget</span>
+            <span className="font-mono text-emerald-400 font-medium">
+              {totalBudget > 0 ? `${remainingBudget.toFixed(2)} ETH` : 'Unlimited'}
+            </span>
+          </div>
+        </div>
+
+        {/* Budget Progress */}
         {totalBudget > 0 && (
-          <div className="w-full bg-dark-900 rounded-full h-2 overflow-hidden border border-dark-750">
-            <div
-              className={"h-full rounded-full transition-all duration-500 " +
-                (isRevoked ? "bg-red-500" : budgetPct > 80 ? "bg-amber-400" : "bg-garden-500")}
-              style={{ width: budgetPct + "%" }}
-            />
+          <div className="space-y-1">
+            <div className="flex justify-between text-[11px] text-warm-400">
+              <span>Cumulative Spend</span>
+              <span className="font-mono">{spentAmount.toFixed(2)} / {totalBudget} ETH ({budgetPct.toFixed(0)}%)</span>
+            </div>
+            <div className="w-full bg-surface-800 h-1.5 rounded-full overflow-hidden">
+              <div
+                className={`h-full transition-all duration-300 ${
+                  budgetPct >= 90 ? 'bg-rose-500' : budgetPct >= 60 ? 'bg-amber-500' : 'bg-emerald-500'
+                }`}
+                style={{ width: `${budgetPct}%` }}
+              />
+            </div>
           </div>
         )}
-
-        <div className="grid grid-cols-2 gap-2 text-xs pt-1">
-          <div className="bg-dark-900/60 p-2 rounded-lg border border-dark-750">
-            <span className="text-gray-400 text-[10px] block">Max Spend / Tx</span>
-            <span className="font-mono font-bold text-white">
-              {selectedNode.policy.maxSpendPerTx ? selectedNode.policy.maxSpendPerTx + ' ETH' : 'Unrestricted'}
-            </span>
-          </div>
-          <div className="bg-dark-900/60 p-2 rounded-lg border border-dark-750">
-            <span className="text-gray-400 text-[10px] block">Remaining Budget</span>
-            <span className="font-mono font-bold text-garden-400">
-              {totalBudget > 0 ? remainingBudget.toFixed(3) + ' ETH' : '∞'}
-            </span>
-          </div>
-        </div>
       </div>
 
-      {/* Allowed Target Contracts */}
-      <div className="space-y-1.5">
-        <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">
-          Whitelisted Target Contracts ({selectedNode.policy.allowedTargets?.length || 'All Allowed'})
-        </span>
-        <div className="space-y-1 max-h-32 overflow-y-auto pr-1">
-          {(!selectedNode.policy.allowedTargets || selectedNode.policy.allowedTargets.length === 0) ? (
-            <div className="text-xs text-gray-400 bg-dark-900/60 p-2 rounded-lg border border-dark-750">
-              Inherits full contract target permissions (Unrestricted)
+      {/* Target Whitelist */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between text-xs">
+          <span className="font-medium text-warm-300">Permitted Target Contracts</span>
+          <span className="text-[10px] font-mono text-warm-400">
+            {selectedNode.policy.allowedTargets.length === 0 ? 'All' : selectedNode.policy.allowedTargets.length}
+          </span>
+        </div>
+
+        <div className="space-y-1.5 max-h-32 overflow-y-auto pr-1">
+          {selectedNode.policy.allowedTargets.length === 0 ? (
+            <div className="p-2 rounded-lg bg-surface-950/40 border border-surface-800 text-[11px] text-warm-400">
+              Unrestricted (Inherited all parent targets)
             </div>
           ) : (
             selectedNode.policy.allowedTargets.map((addr) => {
-              const mock = MOCK_TARGETS.find((m) => m.address.toLowerCase() === addr.toLowerCase());
+              const match = MOCK_TARGETS.find((t) => t.address.toLowerCase() === addr.toLowerCase());
               return (
                 <div
                   key={addr}
-                  className="bg-dark-900/80 p-2 rounded-lg border border-dark-750 flex items-center justify-between text-xs"
+                  className="p-2 rounded-lg bg-surface-950/60 border border-surface-800 flex items-center justify-between text-xs"
                 >
-                  <div>
-                    <span className="font-medium text-gray-200 block">
-                      {mock ? mock.name : 'Target Contract'}
+                  <div className="flex items-center gap-1.5">
+                    <FileCode className="w-3.5 h-3.5 text-amber-400" />
+                    <span className="font-medium text-warm-200 text-[11px]">
+                      {match ? match.name : 'Target Contract'}
                     </span>
-                    <span className="font-mono text-[10px] text-gray-400">{addr}</span>
                   </div>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-dark-800 text-gray-400 border border-dark-700">
-                    {mock ? mock.category : 'Custom'}
+                  <span className="font-mono text-[10px] text-warm-400">
+                    {addr.slice(0, 6)}...{addr.slice(-4)}
                   </span>
                 </div>
               );
@@ -242,72 +228,36 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
         </div>
       </div>
 
-      {/* Allowed Function Selectors */}
-      <div className="space-y-1.5">
-        <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">
-          Whitelisted Function Selectors ({selectedNode.policy.allowedSelectors?.length || 'All Allowed'})
-        </span>
-        <div className="space-y-1 max-h-28 overflow-y-auto pr-1">
-          {(!selectedNode.policy.allowedSelectors || selectedNode.policy.allowedSelectors.length === 0) ? (
-            <div className="text-xs text-gray-400 bg-dark-900/60 p-2 rounded-lg border border-dark-750">
-              All function selectors permitted within allowed targets
-            </div>
-          ) : (
-            selectedNode.policy.allowedSelectors.map((sel) => {
-              let sig = sel;
-              for (const target of MOCK_TARGETS) {
-                const f = target.functions.find((fn) => fn.selector.toLowerCase() === sel.toLowerCase());
-                if (f) {
-                  sig = f.signature;
-                  break;
-                }
-              }
-              return (
-                <div
-                  key={sel}
-                  className="bg-dark-900/80 p-2 rounded-lg border border-dark-750 flex items-center justify-between text-xs"
-                >
-                  <span className="font-mono text-garden-400 text-[11px] truncate max-w-[200px]">{sig}</span>
-                  <span className="font-mono text-[10px] text-gray-400">{sel}</span>
-                </div>
-              );
-            })
-          )}
-        </div>
-      </div>
+      {/* Action Buttons */}
+      <div className="pt-2 border-t border-surface-800 space-y-2">
+        {!isActivePersona && !isRevoked && (
+          <button
+            onClick={() => setActivePersona(selectedNode.nodeId)}
+            className="w-full py-2 px-3 text-xs font-semibold rounded-xl bg-amber-500 hover:bg-amber-400 text-surface-950 transition-colors flex items-center justify-center gap-2 shadow-sm"
+          >
+            <Zap className="w-3.5 h-3.5 fill-current" />
+            <span>Select as Active Signer Persona</span>
+          </button>
+        )}
 
-      {/* Action Footer */}
-      <div className="pt-3 border-t border-dark-750 flex flex-col gap-2">
-        <button
-          onClick={() => setActivePersona(selectedNode.nodeId)}
-          disabled={isActivePersona}
-          className={"w-full py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all " +
-            (isActivePersona
-              ? "bg-amber-500/10 text-amber-400 border border-amber-500/30 cursor-default"
-              : "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-900 shadow-md")}
-        >
-          <Zap className="w-4 h-4 fill-current" />
-          {isActivePersona ? 'Currently Acting as this Signer' : 'Switch & Act as this Signer'}
-        </button>
-
-        <div className="grid grid-cols-2 gap-2">
+        <div className="flex items-center gap-2">
           {!isRevoked && (
             <button
               onClick={() => onOpenPolicyBuilder(selectedNode.nodeId)}
-              className="py-2 px-3 rounded-xl text-xs font-medium bg-garden-600/20 hover:bg-garden-600/30 text-garden-300 border border-garden-500/30 flex items-center justify-center gap-1.5 transition-colors"
+              className="flex-1 py-2 px-3 text-xs font-medium rounded-xl bg-surface-800 hover:bg-surface-750 text-warm-100 border border-surface-700 transition-colors flex items-center justify-center gap-1.5"
             >
-              <Plus className="w-3.5 h-3.5" />
-              Issue Child
+              <Plus className="w-3.5 h-3.5 text-amber-400" />
+              <span>Issue Sub-Account</span>
             </button>
           )}
 
-          {selectedNode.depth > 0 && !isRevoked && (
+          {selectedNode.parentNodeId && !isRevoked && (
             <button
               onClick={() => onOpenPruneModal(selectedNode.nodeId)}
-              className="py-2 px-3 rounded-xl text-xs font-medium bg-red-600/20 hover:bg-red-600/30 text-red-300 border border-red-500/30 flex items-center justify-center gap-1.5 transition-colors"
+              className="py-2 px-3 text-xs font-medium rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 transition-colors flex items-center justify-center gap-1.5"
             >
               <Scissors className="w-3.5 h-3.5" />
-              Prune Branch
+              <span>Prune Branch</span>
             </button>
           )}
         </div>
